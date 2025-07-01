@@ -20,6 +20,7 @@ class NoteController(
     @PostMapping
     fun add(@RequestBody request: CreateNoteRequest): ResponseEntity<Note> {
         if (request.text.isBlank()) {
+            // TODO: Return error object instead?
             return ResponseEntity.badRequest().body(
                 Note(
                     id = "error",
