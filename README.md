@@ -10,10 +10,13 @@ This project can either build as an [OCI image](https://docs.spring.io/spring-bo
 - Create the image with `./gradlew bootBuildImage`
 - Then run the image, e.g. `docker run --rm siloshare:0.0.1-SNAPSHOT`
 
-### 
+### GraalVM Native Image
 This requires the GraalVM native-image compiler (version 22.3+) to be installed and configured. See [this documentation](https://docs.spring.io/spring-boot/how-to/native-image/developing-your-first-application.html)
 - Create the executable with `./gradlew nativeCompile`
 - Then run the executable located in `build/native/nativeCompile/siloshare`
+
+### Usage
+The project includes a [bruno collection](bruno/bruno.json) with the basic API calls. Install [Bruno](https://www.usebruno.com/) to use it.
 
 ## Contribution
 Feel free to contribute via pull requests.
