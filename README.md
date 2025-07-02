@@ -11,7 +11,7 @@ This project can either build as an [OCI image](https://docs.spring.io/spring-bo
 - Then run the image, e.g. `docker run --rm siloshare:0.0.1-SNAPSHOT`
 
 ### GraalVM Native Image
-This requires the GraalVM native-image compiler (version 22.3+) to be installed and configured. See [this documentation](https://docs.spring.io/spring-boot/how-to/native-image/developing-your-first-application.html)
+This requires the GraalVM native-image compiler (version 23.0.7 or newer) to be installed and configured. See [this documentation](https://docs.spring.io/spring-boot/how-to/native-image/developing-your-first-application.html)
 - Create the executable with `./gradlew nativeCompile`
 - Then run the executable located in `build/native/nativeCompile/siloshare`
 
