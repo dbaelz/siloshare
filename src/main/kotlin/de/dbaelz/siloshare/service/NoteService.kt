@@ -1,6 +1,8 @@
 package de.dbaelz.siloshare.service
 
 import de.dbaelz.siloshare.model.Note
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.stereotype.Service
 import java.time.Instant
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -10,7 +12,11 @@ interface NoteService {
     fun getAll(): List<Note>
 }
 
-class InMemoryNoteService : NoteService {
+@Service
+class InMemoryNoteService(
+    @Value("\${siloshare.notes.remove-duration-seconds:$DEFAULT_REMOVE_SECONDS}")
+    private val removeDurationSeconds: Long
+) : NoteService {
     private val entries = ConcurrentHashMap<String, Note>()
 
     override fun add(text: String): Note {
@@ -27,7 +33,7 @@ class InMemoryNoteService : NoteService {
     }
 
     override fun getAll(): List<Note> {
-        val removeTime = Instant.now().minusSeconds(DEFAULT_REMOVE_SECONDS)
+        val removeTime = Instant.now().minusSeconds(removeDurationSeconds)
 
         synchronized(entries) {
             val validEntries = entries.entries
@@ -42,6 +48,6 @@ class InMemoryNoteService : NoteService {
     }
 
     private companion object {
-        const val DEFAULT_REMOVE_SECONDS = 7200L
+        const val DEFAULT_REMOVE_SECONDS = 600L
     }
 }

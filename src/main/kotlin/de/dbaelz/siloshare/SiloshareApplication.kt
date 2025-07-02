@@ -10,14 +10,6 @@ import org.springframework.context.annotation.Configuration
 @SpringBootApplication
 class SiloshareApplication
 
-@Configuration
-class AppConfig {
-    @Bean
-    fun noteService(): NoteService {
-        return InMemoryNoteService()
-    }
-}
-
 fun main(args: Array<String>) {
     runApplication<SiloshareApplication>(*args)
 }
