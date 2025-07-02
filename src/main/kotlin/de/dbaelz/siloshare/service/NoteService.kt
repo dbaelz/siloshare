@@ -2,8 +2,8 @@ package de.dbaelz.siloshare.service
 
 import de.dbaelz.siloshare.model.Note
 import java.time.Instant
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import java.util.UUID
 
 interface NoteService {
     fun add(text: String): Note
@@ -27,6 +27,21 @@ class InMemoryNoteService : NoteService {
     }
 
     override fun getAll(): List<Note> {
-        return entries.values.toList()
+        val removeTime = Instant.now().minusSeconds(DEFAULT_REMOVE_SECONDS)
+
+        synchronized(entries) {
+            val validEntries = entries.entries
+                .filter { it.value.timestamp.isAfter(removeTime) }
+                .associate { it.key to it.value }
+
+            entries.clear()
+            entries.putAll(validEntries)
+
+            return entries.values.toList()
+        }
+    }
+
+    private companion object {
+        const val DEFAULT_REMOVE_SECONDS = 7200L
     }
 }
