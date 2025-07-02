@@ -7,7 +7,12 @@ meta {
 post {
   url: {{host}}/notes
   body: json
-  auth: inherit
+  auth: basic
+}
+
+auth:basic {
+  username: {{auth_username}}
+  password: {{auth_password}}
 }
 
 body:json {

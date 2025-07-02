@@ -7,5 +7,10 @@ meta {
 get {
   url: {{host}}/notes
   body: none
-  auth: inherit
+  auth: basic
+}
+
+auth:basic {
+  username: {{auth_username}}
+  password: {{auth_password}}
 }
