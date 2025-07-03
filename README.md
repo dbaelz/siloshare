@@ -21,8 +21,9 @@ This requires the GraalVM native-image compiler (version 23.0.7 or newer) to be 
 - Create the executable with `./gradlew nativeCompile`
 - Then run the `siloshare` executable located in `build/native/nativeCompile`
 
-### Usage
-The project includes a [bruno collection](bruno/bruno.json) with the basic API calls. Install [Bruno](https://www.usebruno.com/) to use it.
+## Usage
+- Use the [siloshare client](https://github.com/dbaelz/siloshare-client) available for Android, iOS, Web and Desktop to interact with the server.
+- For development the project includes a [bruno collection](bruno/bruno.json) with the basic API calls. Install [Bruno](https://www.usebruno.com/) to use it.
 
 ## Contribution
 Feel free to contribute via pull requests.
