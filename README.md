@@ -6,11 +6,19 @@ Keep in mind that it has only limited security, so use it only in a local enviro
 ### Features
 - Send text to the server with a HTTP POST request
 - Retrieve the texts with a HTTP GET request
-- Texts are stored in memory and will be lost when the server is restarted. They are deleted after 10 minutes. (configure in [application.properties](src/main/resources/application.properties)
+- Notes are stored in memory and will be lost when the server is restarted
+- Per default, the notes are removed after 10 minutes (see configuration)
+
+### Configuration
+Spring Boot is used to run the server. The configuration is done via the [application.properties](src/main/resources/application.properties) file.
+The configuration can be changed on the command line. Example arguments:
+- Set different credentials for basic auth: `--basic.auth.username=myuser --basic.auth.password=mypassword`
+- Adjust when the notes are removed: `--notes.remove-duration-seconds=120`
+
+Important: The basic auth credentials (username and password) should be changed for production use!
 
 ## Build
 This project can either build as an [OCI image](https://docs.spring.io/spring-boot/gradle-plugin/packaging-oci-image.html) or a GraalVM Native Image.
-Important: Change the username and password in the [application.properties](src/main/resources/application.properties) to your own values before building the project.
 
 ### OCI image
 - Create the image with `./gradlew bootBuildImage`

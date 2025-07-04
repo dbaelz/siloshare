@@ -14,7 +14,7 @@ interface NoteService {
 
 @Service
 class InMemoryNoteService(
-    @Value("\${siloshare.notes.remove-duration-seconds:$DEFAULT_REMOVE_SECONDS}")
+    @Value("\${notes.remove-duration-seconds:$DEFAULT_REMOVE_SECONDS}")
     private val removeDurationSeconds: Long
 ) : NoteService {
     private val entries = ConcurrentHashMap<String, Note>()
