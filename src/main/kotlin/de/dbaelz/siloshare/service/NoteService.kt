@@ -9,8 +9,8 @@ import java.util.concurrent.ConcurrentHashMap
 
 interface NoteService {
     fun add(text: String): Note
-    fun getAll(): List<Note>
     fun delete(id: String): Boolean
+    fun getAll(): List<Note>
 }
 
 @Service
@@ -33,6 +33,10 @@ class InMemoryNoteService(
         return entry
     }
 
+    override fun delete(id: String): Boolean {
+        return entries.remove(id) != null
+    }
+
     override fun getAll(): List<Note> {
         val removeTime = Instant.now().minusSeconds(removeDurationSeconds)
 
@@ -47,10 +51,6 @@ class InMemoryNoteService(
             // Return a new array list to avoid issues with GraalVM native image
             return ArrayList(entries.values.sortedBy { it.timestamp })
         }
-    }
-
-    override fun delete(id: String): Boolean {
-        return entries.remove(id) != null
     }
 
     private companion object {

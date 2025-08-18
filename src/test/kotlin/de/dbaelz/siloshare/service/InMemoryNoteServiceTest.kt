@@ -26,6 +26,24 @@ class InMemoryNoteServiceTest {
         assertTrue(note.timestamp.isBefore(Instant.now().plusSeconds(1)))
     }
 
+
+    @Test
+    fun `delete should remove the note and return true`() {
+        val note = noteService.add("To be deleted")
+
+        val deleted = noteService.delete(note.id)
+
+        assertTrue(deleted)
+        assertTrue(noteService.getAll().none { it.id == note.id })
+    }
+
+    @Test
+    fun `delete should return false for non-existent note`() {
+        val deleted = noteService.delete(UUID.randomUUID().toString())
+
+        assertFalse(deleted)
+    }
+
     @Test
     fun `getAll should return all notes within remove duration`() {
         val note1 = noteService.add("Note 1")
@@ -62,22 +80,5 @@ class InMemoryNoteServiceTest {
 
         assertEquals(1, notes.size)
         assertEquals(expected, notes.first())
-    }
-
-    @Test
-    fun `delete should remove the note and return true`() {
-        val note = noteService.add("To be deleted")
-
-        val deleted = noteService.delete(note.id)
-
-        assertTrue(deleted)
-        assertTrue(noteService.getAll().none { it.id == note.id })
-    }
-
-    @Test
-    fun `delete should return false for non-existent note`() {
-        val deleted = noteService.delete(UUID.randomUUID().toString())
-
-        assertFalse(deleted)
     }
 }
