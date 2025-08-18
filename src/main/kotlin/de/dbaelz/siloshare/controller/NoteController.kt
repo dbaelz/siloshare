@@ -28,4 +28,13 @@ class NoteController(
     fun getAll(): ResponseEntity<List<Note>> {
         return ResponseEntity.ok(noteService.getAll())
     }
+
+    @DeleteMapping("/{id}")
+    fun delete(@PathVariable id: String): ResponseEntity<Void> {
+        return if (noteService.delete(id)) {
+            ResponseEntity.noContent().build()
+        } else {
+            ResponseEntity.notFound().build()
+        }
+    }
 }
