@@ -45,7 +45,7 @@ class InMemoryNoteService(
             entries.putAll(validEntries)
 
             // Return a new array list to avoid issues with GraalVM native image
-            return ArrayList(entries.values)
+            return ArrayList(entries.values.sortedBy { it.timestamp })
         }
     }
 
