@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.time.Instant
+import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 class InMemoryNoteServiceTest {
@@ -61,5 +62,22 @@ class InMemoryNoteServiceTest {
 
         assertEquals(1, notes.size)
         assertEquals(expected, notes.first())
+    }
+
+    @Test
+    fun `delete should remove the note and return true`() {
+        val note = noteService.add("To be deleted")
+
+        val deleted = noteService.delete(note.id)
+
+        assertTrue(deleted)
+        assertTrue(noteService.getAll().none { it.id == note.id })
+    }
+
+    @Test
+    fun `delete should return false for non-existent note`() {
+        val deleted = noteService.delete(UUID.randomUUID().toString())
+
+        assertFalse(deleted)
     }
 }

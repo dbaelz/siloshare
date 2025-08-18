@@ -8,6 +8,7 @@ Keep in mind that it has only limited security, so use it only in a local enviro
 - Retrieve the texts with a HTTP GET request
 - Notes are stored in memory and will be lost when the server is restarted
 - Per default, the notes are removed after 10 minutes (see configuration)
+- Delete all a note with a HTTP DELETE request
 
 ### Configuration
 Spring Boot is used to run the server. The configuration is done via the [application.properties](src/main/resources/application.properties) file.

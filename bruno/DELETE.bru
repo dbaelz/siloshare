@@ -1,0 +1,16 @@
+meta {
+  name: DELETE
+  type: http
+  seq: 3
+}
+
+delete {
+  url: {{host}}/notes/{{id}}
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{auth_username}}
+  password: {{auth_password}}
+}
