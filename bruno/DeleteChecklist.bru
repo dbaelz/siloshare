@@ -1,0 +1,17 @@
+meta {
+  name: Checklist
+  type: http
+  seq: 7
+}
+
+delete {
+  url: {{host}}/notes/{{id}}/checklist
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{auth_username}}
+  password: {{auth_password}}
+}
+

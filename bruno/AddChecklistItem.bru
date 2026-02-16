@@ -1,11 +1,11 @@
 meta {
-  name: Note
+  name: ChecklistItem
   type: http
-  seq: 2
+  seq: 4
 }
 
 post {
-  url: {{host}}/notes
+  url: {{host}}/notes/{{id}}/checklist/items
   body: json
   auth: basic
 }
@@ -17,6 +17,6 @@ auth:basic {
 
 body:json {
   {
-    "text": "A very important note"
+    "text": "New item to checklist"
   }
 }

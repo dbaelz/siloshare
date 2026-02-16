@@ -1,11 +1,11 @@
 meta {
-  name: DELETE
+  name: ChecklistItem
   type: http
-  seq: 3
+  seq: 6
 }
 
 delete {
-  url: {{host}}/notes/{{id}}
+  url: {{host}}/notes/{{id}}/checklist/items/{{itemId}}
   body: none
   auth: basic
 }
@@ -14,3 +14,4 @@ auth:basic {
   username: {{auth_username}}
   password: {{auth_password}}
 }
+

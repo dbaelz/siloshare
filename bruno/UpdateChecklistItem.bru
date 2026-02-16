@@ -1,0 +1,24 @@
+meta {
+  name: ChecklistItem
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{host}}/notes/{{id}}/checklist/items/{{itemId}}
+  body: json
+  auth: basic
+}
+
+auth:basic {
+  username: {{auth_username}}
+  password: {{auth_password}}
+}
+
+body:json {
+  {
+    "text": "Updated text for checklist item",
+    "done": true
+  }
+}
+

@@ -1,0 +1,28 @@
+meta {
+  name: Note
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{host}}/notes
+  body: json
+  auth: basic
+}
+
+auth:basic {
+  username: {{auth_username}}
+  password: {{auth_password}}
+}
+
+body:json {
+  {
+    "text": "A very important note",
+    "checklist": {
+      "items": [
+        { "text": "First item" },
+        { "text": "Second item" }
+      ]
+    }
+  }
+}
