@@ -1,17 +1,17 @@
 package de.dbaelz.siloshare.controller
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.hamcrest.Matchers.containsString
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import tools.jackson.databind.ObjectMapper
 import java.util.*
 
 @SpringBootTest
@@ -55,7 +55,7 @@ class NoteControllerTest @Autowired constructor(
             .andReturn()
 
         val node = objectMapper.readTree(mvcResult.response.contentAsString)
-        assert(node.get("id").asText().isNotEmpty())
+        assert(node.get("id").asString().isNotEmpty())
         assert(node.get("checklist") == null || node.get("checklist").isNull)
     }
 
@@ -83,8 +83,8 @@ class NoteControllerTest @Autowired constructor(
         assertNotNull(checklist)
         val items = checklist.get("items")
         assert(items.size() == 2)
-        assert(items[0].get("text").asText() == todo1)
-        assert(items[1].get("text").asText() == todo2)
+        assert(items[0].get("text").asString() == todo1)
+        assert(items[1].get("text").asString() == todo2)
     }
 
     @Test
@@ -120,8 +120,8 @@ class NoteControllerTest @Autowired constructor(
         val items = node.get("checklist").get("items")
 
         assert(items.size() == 2)
-        assert(items[0].get("text").asText() == first)
-        assert(items[1].get("text").asText() == second)
+        assert(items[0].get("text").asString() == first)
+        assert(items[1].get("text").asString() == second)
     }
 
     @Test
@@ -143,8 +143,8 @@ class NoteControllerTest @Autowired constructor(
         val node = objectMapper.readTree(mvcResult.response.contentAsString)
         val items = node.get("items")
         assert(items.size() == 1)
-        assert(items[0].get("text").asText() == todoText)
-        assert(items[0].get("id").asText().isNotEmpty())
+        assert(items[0].get("text").asString() == todoText)
+        assert(items[0].get("id").asString().isNotEmpty())
     }
 
     @Test
@@ -163,7 +163,7 @@ class NoteControllerTest @Autowired constructor(
             .andReturn()
 
         val createdNode = objectMapper.readTree(createResult.response.contentAsString)
-        val itemId = createdNode.get("items").get(0).get("id").asText()
+        val itemId = createdNode.get("items").get(0).get("id").asString()
 
         val updatedText = "updated"
         val doneFlag = true
@@ -180,8 +180,8 @@ class NoteControllerTest @Autowired constructor(
             .andReturn()
 
         val patched = objectMapper.readTree(patchResult.response.contentAsString)
-        val patchedItem = patched.get("items").first { it.get("id").asText() == itemId }
-        assert(patchedItem.get("text").asText() == updatedText)
+        val patchedItem = patched.get("items").first { it.get("id").asString() == itemId }
+        assert(patchedItem.get("text").asString() == updatedText)
         assert(patchedItem.get("done").asBoolean())
     }
 
@@ -204,7 +204,7 @@ class NoteControllerTest @Autowired constructor(
 
         val putNode = objectMapper.readTree(putResult.response.contentAsString)
         val itemsNode = putNode.get("checklist").get("items")
-        val removeId = itemsNode.get(0).get("id").asText()
+        val removeId = itemsNode.get(0).get("id").asString()
 
         mockMvc.perform(
             delete("/api/notes/$id/checklist/items/$removeId")
@@ -265,6 +265,6 @@ class NoteControllerTest @Autowired constructor(
         val responseBody = mvcResult.response.contentAsString
         val node = objectMapper.readTree(responseBody)
 
-        return node.get("id").asText()
+        return node.get("id").asString()
     }
 }
