@@ -100,7 +100,7 @@ class NoteControllerTest @Autowired constructor(
     }
 
     @Test
-    fun `put checklist on note should return note with checklist`() {
+    fun `put checklist on note should return checklist`() {
         val id = createNoteReturnId("checklist note")
         val first = "first"
         val second = "second"

@@ -60,14 +60,14 @@ class NoteController(
     }
 
     @PutMapping("/{id}/checklist")
-    fun addChecklist(
+    fun updateChecklist(
         @PathVariable id: String,
         @RequestBody request: PutChecklistRequest
     ): ResponseEntity<Note> {
         val items = request.items
-        val checklist = noteService.addChecklist(id, items)
+        val note = noteService.addChecklist(id, items)
             ?: return ResponseEntity.notFound().build()
-        return ResponseEntity.ok(checklist)
+        return ResponseEntity.ok(note)
     }
 
     @GetMapping("/{id}/checklist")

@@ -1,0 +1,23 @@
+meta {
+  name: Checklist
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{host}}/notes/{{id}}/checklist
+  body: json
+  auth: basic
+}
+
+auth:basic {
+  username: {{auth_username}}
+  password: {{auth_password}}
+}
+
+body:json {
+  {
+    "items": ["First item", "Second item"]
+  }
+}
+
