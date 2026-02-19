@@ -14,7 +14,7 @@ Keep in mind that it has only limited security, so use it only in a local enviro
 Spring Boot is used to run the server. The configuration is done via the [application.properties](src/main/resources/application.properties) file.
 The configuration can be changed on the command line. Example arguments:
 - Set different credentials for basic auth: `--basic.auth.username=myuser --basic.auth.password=mypassword`
-- Adjust when the notes are removed: `--notes.remove-duration-seconds=120`
+- Adjust when the notes are removed: `--notes.remove-duration-seconds=120`. A zero or negative value means that the notes will never be removed automatically.
 
 Important: The basic auth credentials (username and password) should be changed for production use!
 

@@ -37,7 +37,7 @@ interface NoteService {
 
 @Service
 class InMemoryNoteService(
-    @Value("\${notes.remove-duration-seconds:$DEFAULT_REMOVE_SECONDS}")
+    @param:Value("\${notes.remove-duration-seconds:$DEFAULT_REMOVE_SECONDS}")
     private val removeDurationSeconds: Long
 ) : NoteService {
     private val entries = ConcurrentHashMap<String, Note>()
@@ -73,11 +73,17 @@ class InMemoryNoteService(
     }
 
     override fun getAll(): List<Note> {
-        val removeTime = Instant.now().minusSeconds(removeDurationSeconds)
-
         synchronized(entries) {
+            if (removeDurationSeconds <= 0L) {
+                return ArrayList(entries.values.sortedBy { it.timestamp })
+            }
+
             val validEntries = entries.entries
-                .filter { it.value.timestamp.isAfter(removeTime) }
+                .filter {
+                    it.value.timestamp.isAfter(
+                        Instant.now().minusSeconds(removeDurationSeconds)
+                    )
+                }
                 .associate { it.key to it.value }
 
             entries.clear()
