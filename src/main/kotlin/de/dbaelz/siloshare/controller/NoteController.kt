@@ -1,6 +1,7 @@
 package de.dbaelz.siloshare.controller
 
 import de.dbaelz.siloshare.model.Checklist
+import de.dbaelz.siloshare.model.NewChecklistItem
 import de.dbaelz.siloshare.model.Note
 import de.dbaelz.siloshare.service.NoteService
 import jakarta.validation.Valid
@@ -21,11 +22,12 @@ data class CreateChecklistRequest(
 
 data class CreateChecklistItemRequest(
     @field:NotBlank
-    val text: String
+    val text: String,
+    val done: Boolean = false
 )
 
 data class PutChecklistRequest(
-    val items: List<String> = listOf()
+    val items: List<NewChecklistItem> = listOf()
 )
 
 data class PatchChecklistItemRequest(
@@ -40,7 +42,7 @@ class NoteController(
 ) {
     @PostMapping
     fun add(@Valid @RequestBody request: CreateNoteRequest): ResponseEntity<Note> {
-        val checklistItems = request.checklist?.items?.map { it.text }
+        val checklistItems = request.checklist?.items?.map { NewChecklistItem(it.text, it.done) }
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(noteService.add(request.text, checklistItems))
     }
@@ -64,7 +66,7 @@ class NoteController(
         @PathVariable id: String,
         @RequestBody request: PutChecklistRequest
     ): ResponseEntity<Note> {
-        val items = request.items
+        val items = request.items.map { NewChecklistItem(it.text, it.done) }
         val note = noteService.addChecklist(id, items)
             ?: return ResponseEntity.notFound().build()
         return ResponseEntity.ok(note)

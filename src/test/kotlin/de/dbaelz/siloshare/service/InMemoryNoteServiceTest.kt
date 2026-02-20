@@ -1,5 +1,6 @@
 package de.dbaelz.siloshare.service
 
+import de.dbaelz.siloshare.model.NewChecklistItem
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -29,16 +30,18 @@ class InMemoryNoteServiceTest {
 
     @Test
     fun `add with checklist should create note with checklist`() {
-        val first = "first"
-        val second = "second"
+        val first = NewChecklistItem("first", true)
+        val second = NewChecklistItem("second")
         val items = listOf(first, second)
         val note = noteService.add("Note created with checklist", items)
 
         assertNotNull(note.checklist)
         val checklist = note.checklist!!
         assertEquals(2, checklist.items.size)
-        assertEquals(first, checklist.items[0].text)
-        assertEquals(second, checklist.items[1].text)
+        assertEquals(first.text, checklist.items[0].text)
+        assertEquals(first.done, checklist.items[0].done)
+        assertEquals(second.text, checklist.items[1].text)
+        assertEquals(second.done, checklist.items[1].done)
         assertNotNull(checklist.items[0].id)
         assertNotNull(checklist.updatedAt)
 
@@ -111,9 +114,11 @@ class InMemoryNoteServiceTest {
 
     @Test
     fun `addChecklist should create a checklist on a note`() {
+        val newChecklistItems = listOf(NewChecklistItem("item1"), NewChecklistItem("item2"))
+
         val note = noteService.add("Note with checklist")
 
-        val updated = noteService.addChecklist(note.id, listOf("item1", "item2"))
+        val updated = noteService.addChecklist(note.id, newChecklistItems)
             ?: fail("addChecklist returned null")
 
         val checklist = updated.checklist
@@ -127,14 +132,18 @@ class InMemoryNoteServiceTest {
 
     @Test
     fun `addChecklist returns null for non-existent note`() {
-        val res = noteService.addChecklist(UUID.randomUUID().toString(), listOf("x"))
+        val res = noteService.addChecklist(
+            UUID.randomUUID().toString(),
+            listOf(NewChecklistItem("not existing"))
+        )
         assertNull(res)
     }
 
     @Test
     fun `deleteChecklist should remove the entire checklist from the note`() {
         val note = noteService.add("Note to delete checklist")
-        noteService.addChecklist(note.id, listOf("only")) ?: fail("addChecklist returned null")
+        noteService.addChecklist(note.id, listOf(NewChecklistItem("item")))
+            ?: fail("addChecklist returned null")
 
         val deleted = noteService.deleteChecklist(note.id)
 
@@ -170,8 +179,9 @@ class InMemoryNoteServiceTest {
     @Test
     fun `updateChecklistItem should modify text and done state`() {
         val note = noteService.add("Note to update item")
-        val noteWithChecklist = noteService.addChecklist(note.id, listOf("old text"))
-            ?: fail("addChecklist returned null")
+        val noteWithChecklist =
+            noteService.addChecklist(note.id, listOf(NewChecklistItem("old text")))
+                ?: fail("addChecklist returned null")
         val itemId = noteWithChecklist.checklist!!.items[0].id
 
         val checklist = noteService.updateChecklistItem(note.id, itemId, "new text", true)
@@ -196,7 +206,8 @@ class InMemoryNoteServiceTest {
     @Test
     fun `updateChecklistItem returns null for non-existent item`() {
         val note = noteService.add("note")
-        noteService.addChecklist(note.id, listOf("a")) ?: fail("addChecklist returned null")
+        noteService.addChecklist(note.id, listOf(NewChecklistItem("item")))
+            ?: fail("addChecklist returned null")
         val res = noteService.updateChecklistItem(note.id, UUID.randomUUID().toString(), "x", true)
         assertNull(res)
     }
@@ -204,7 +215,10 @@ class InMemoryNoteServiceTest {
     @Test
     fun `deleteChecklistItem should remove the item from the checklist`() {
         val note = noteService.add("Note to delete item")
-        val noteWithChecklist = noteService.addChecklist(note.id, listOf("one", "two"))
+        val noteWithChecklist = noteService.addChecklist(
+            note.id,
+            listOf(NewChecklistItem("item1"), NewChecklistItem("item2"))
+        )
             ?: fail("addChecklist returned null")
         val itemId = noteWithChecklist.checklist!!.items[0].id
         val beforeSize = noteWithChecklist.checklist!!.items.size
@@ -228,7 +242,8 @@ class InMemoryNoteServiceTest {
     @Test
     fun `deleteChecklistItem returns false for non-existent item`() {
         val note = noteService.add("note")
-        noteService.addChecklist(note.id, listOf("a")) ?: fail("addChecklist returned null")
+        noteService.addChecklist(note.id, listOf(NewChecklistItem("item")))
+            ?: fail("addChecklist returned null")
         val res = noteService.deleteChecklistItem(note.id, UUID.randomUUID().toString())
         assertFalse(res)
     }
@@ -237,12 +252,15 @@ class InMemoryNoteServiceTest {
     fun `getChecklist returns checklist for existing note`() {
         val note = noteService.add("note with checklist")
         val before = Instant.now()
-        noteService.addChecklist(note.id, listOf("a", "b")) ?: fail("addChecklist returned null")
+        noteService.addChecklist(
+            note.id,
+            listOf(NewChecklistItem("item1"), NewChecklistItem("item2"))
+        ) ?: fail("addChecklist returned null")
 
         val res = noteService.getChecklist(note.id)
         assertNotNull(res)
         assertEquals(2, res!!.items.size)
-        assertEquals("a", res.items[0].text)
+        assertEquals("item1", res.items[0].text)
 
         assertNotNull(res.updatedAt)
         assertTrue(res.updatedAt!!.isAfter(before) || res.updatedAt == before)
@@ -252,7 +270,8 @@ class InMemoryNoteServiceTest {
     fun `addChecklistItem appends to existing checklist and updates timestamp`() {
         val note = noteService.add("note append")
         val initial =
-            noteService.addChecklist(note.id, listOf("first")) ?: fail("addChecklist returned null")
+            noteService.addChecklist(note.id, listOf(NewChecklistItem("first")))
+                ?: fail("addChecklist returned null")
         val prevUpdatedAt = initial.checklist!!.updatedAt
 
         Thread.sleep(1)
@@ -277,15 +296,16 @@ class InMemoryNoteServiceTest {
 
     @Test
     fun `updateChecklistItem updates timestamp when changing item`() {
-        val note = noteService.add("note update ts")
+        val note = noteService.add("note update")
         val noteWithChecklist =
-            noteService.addChecklist(note.id, listOf("one")) ?: fail("addChecklist returned null")
+            noteService.addChecklist(note.id, listOf(NewChecklistItem("item")))
+                ?: fail("addChecklist returned null")
         val checklist = noteWithChecklist.checklist!!
         val itemId = checklist.items[0].id
         val prev = checklist.updatedAt
 
         Thread.sleep(1)
-        val after = noteService.updateChecklistItem(note.id, itemId, "one-updated", true)
+        val after = noteService.updateChecklistItem(note.id, itemId, "item-updated", true)
             ?: fail("updateChecklistItem returned null")
         assertNotNull(after.updatedAt)
         if (prev != null) {
@@ -295,8 +315,9 @@ class InMemoryNoteServiceTest {
 
     @Test
     fun `deleteChecklistItem updates timestamp when removing item`() {
+        val newChecklistItems = listOf(NewChecklistItem("item1"), NewChecklistItem("item2"))
         val note = noteService.add("note delete ts")
-        val noteWithChecklist = noteService.addChecklist(note.id, listOf("one", "two"))
+        val noteWithChecklist = noteService.addChecklist(note.id, newChecklistItems)
             ?: fail("addChecklist returned null")
         val checklist = noteWithChecklist.checklist!!
         val itemId = checklist.items[0].id

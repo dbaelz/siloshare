@@ -1,0 +1,48 @@
+meta {
+  name: DeleteChecklistItemWithPut
+  type: http
+  seq: 8
+}
+
+# Create a note
+post {
+  url: {{host}}/notes
+  body: json
+  auth: basic
+}
+
+body:json {
+  {
+    "text": "note for delete item",
+    "checklist": null
+  }
+}
+
+# Put checklist with items as objects
+put {
+  url: {{host}}/notes/{{id}}/checklist
+  body: json
+  auth: basic
+}
+
+body:json {
+  {
+    "items": [
+      { "text": "one" },
+      { "text": "two" }
+    ]
+  }
+}
+
+# Delete the first item
+delete {
+  url: {{host}}/notes/{{id}}/checklist/items/{{itemId}}
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{auth_username}}
+  password: {{auth_password}}
+}
+

@@ -1,7 +1,9 @@
 package de.dbaelz.siloshare.controller
 
 import org.hamcrest.Matchers.containsString
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -104,7 +106,7 @@ class NoteControllerTest @Autowired constructor(
         val id = createNoteReturnId("checklist note")
         val first = "first"
         val second = "second"
-        val req = mapOf("items" to listOf(first, second))
+        val req = mapOf("items" to listOf(mapOf("text" to first, "done" to true), mapOf("text" to second)))
         val content = objectMapper.writeValueAsString(req)
 
         val mvcResult = mockMvc.perform(
@@ -121,7 +123,9 @@ class NoteControllerTest @Autowired constructor(
 
         assert(items.size() == 2)
         assert(items[0].get("text").asString() == first)
+        assertTrue(items[0].get("done").asBoolean())
         assert(items[1].get("text").asString() == second)
+        assertFalse(items[1].get("done").asBoolean())
     }
 
     @Test
@@ -190,7 +194,7 @@ class NoteControllerTest @Autowired constructor(
         val id = createNoteReturnId("delete-item note")
         val first = "one"
         val second = "two"
-        val putReq = mapOf("items" to listOf(first, second))
+        val putReq = mapOf("items" to listOf(mapOf("text" to first), mapOf("text" to second)))
         val putContent = objectMapper.writeValueAsString(putReq)
 
         val putResult = mockMvc.perform(
@@ -225,7 +229,7 @@ class NoteControllerTest @Autowired constructor(
     fun `delete checklist should remove checklist from note`() {
         val id = createNoteReturnId("delete-checklist note")
         val only = "only"
-        val putReq = mapOf("items" to listOf(only))
+        val putReq = mapOf("items" to listOf(mapOf("text" to only)))
         val putContent = objectMapper.writeValueAsString(putReq)
         mockMvc.perform(
             put("/api/notes/$id/checklist")

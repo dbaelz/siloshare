@@ -2,6 +2,7 @@ package de.dbaelz.siloshare.service
 
 import de.dbaelz.siloshare.model.Checklist
 import de.dbaelz.siloshare.model.ChecklistItem
+import de.dbaelz.siloshare.model.NewChecklistItem
 import de.dbaelz.siloshare.model.Note
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -10,13 +11,13 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 interface NoteService {
-    fun add(text: String, checklistItems: List<String>? = null): Note
+    fun add(text: String, checklistItems: List<NewChecklistItem>? = null): Note
     fun delete(id: String): Boolean
     fun getAll(): List<Note>
 
     fun addChecklist(
         noteId: String,
-        items: List<String>
+        items: List<NewChecklistItem>
     ): Note?
 
     fun deleteChecklist(noteId: String): Boolean
@@ -42,7 +43,7 @@ class InMemoryNoteService(
 ) : NoteService {
     private val entries = ConcurrentHashMap<String, Note>()
 
-    override fun add(text: String, checklistItems: List<String>?): Note {
+    override fun add(text: String, checklistItems: List<NewChecklistItem>?): Note {
         val id = UUID.randomUUID().toString()
 
         val entry = Note(
@@ -56,7 +57,8 @@ class InMemoryNoteService(
                 items = checklistItems.map {
                     ChecklistItem(
                         id = UUID.randomUUID().toString(),
-                        text = it
+                        text = it.text,
+                        done = it.done
                     )
                 }.toMutableList(),
                 updatedAt = Instant.now()
@@ -96,7 +98,7 @@ class InMemoryNoteService(
 
     override fun addChecklist(
         noteId: String,
-        items: List<String>
+        items: List<NewChecklistItem>
     ): Note? {
         val note = entries[noteId] ?: return null
 
@@ -105,7 +107,8 @@ class InMemoryNoteService(
                 items = items.map {
                     ChecklistItem(
                         id = UUID.randomUUID().toString(),
-                        text = it
+                        text = it.text,
+                        done = it.done
                     )
                 }.toMutableList()
             )
